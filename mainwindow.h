@@ -8,6 +8,8 @@
 #include <QString>
 #include <QImage>
 #include <QLabel>
+#include <QScrollArea>
+#include <QSpacerItem>
 
 class MainWindow : public QMainWindow
 {
@@ -59,8 +61,17 @@ private:
     QWidget* centerWidget;
     QImage* srcImg;
     QImage* curImg;
+    QLabel* srcLabel;
     QLabel* srcImgDispArea;
+    QLabel* curLabel;
     QLabel* curImgDispArea;
+    QScrollArea* srcImgDispAreaScroll;
+    QScrollArea* curImgDispAreaScroll;
+    QSpacerItem* hSpacer1;
+    QSpacerItem* hSpacer2;
+    QSpacerItem* vSpacer1;
+    QSpacerItem* vSpacer2;
+
 
     // dialog
 

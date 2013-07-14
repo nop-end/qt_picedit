@@ -1,11 +1,13 @@
-QT += gui widgets core
+QT += widgets core gui
 
-HEADERS +=  mainwindow.h
+SOURCES += \
+    mainwindow.cpp \
+    main.cpp
 
-SOURCES += mainwindow.cpp  main.cpp
-
-FORMS +=
+HEADERS += \
+    mainwindow.h
 
 OTHER_FILES +=
 
-RESOURCES += resource.qrc
+RESOURCES += \
+    image.qrc

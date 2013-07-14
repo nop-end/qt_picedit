@@ -18,7 +18,7 @@ MainWindow::MainWindow(int h):imageHight(h){
 
     readSettings();
 
-    setWindowTitle(QString(tr("%1   copyrights: %2").arg("picEdit").arg("nop-end")));
+    setWindowTitle(QString(tr("%1   copyrights: %2").arg("picEdit").arg("nop")));
     setCurrentFile("");
 }
 
@@ -227,24 +227,42 @@ void MainWindow::createStatusBar(){
 }
 
 void MainWindow::createLayOut(){
-    srcImg = new QImage;
-    srcImg->load(":/images/main.png");
-    srcImgDispArea = new QLabel(tr("Source Image"));
-    curImg = new QImage;
-    curImg->load(":/images/main.png");
-    curImgDispArea = new QLabel(tr("Modified Image"));
+    srcImg = new QImage(":/images/main.png");
+    curImg = new QImage(":/images/main.png");
 
-    float param = srcImg->height() / imageHight;
-
-    srcImgDispArea->setPixmap(QPixmap::fromImage(*srcImg).scaled(srcImg->width() / param, imageHight, Qt::KeepAspectRatio));
+    srcLabel = new QLabel(tr("&Source Image"));
+    srcImgDispArea = new QLabel;
     srcImgDispArea->setScaledContents(true);
-    curImgDispArea->setPixmap(QPixmap::fromImage(*curImg).scaled(curImg->width() / param, imageHight, Qt::KeepAspectRatio));
+    srcImgDispArea->setBaseSize(srcImg->width(),srcImg->height());
+    srcImgDispArea->setPixmap(QPixmap::fromImage(*srcImg).scaled(srcImg->width(),srcImg->height(),Qt::KeepAspectRatio));
+    curLabel = new QLabel(tr("&Current Modified Image"));
+    curImgDispArea = new QLabel;
     curImgDispArea->setScaledContents(true);
+    curImgDispArea->setBaseSize(curImg->width(),curImg->height());
+    curImgDispArea->setPixmap(QPixmap::fromImage(*curImg).scaled(curImg->width(),curImg->height(),Qt::KeepAspectRatio));
+
+    srcImgDispAreaScroll = new QScrollArea;
+    srcImgDispAreaScroll->setWidgetResizable(true);
+    srcImgDispAreaScroll->viewport()->setBackgroundRole(QPalette::Light);
+    srcImgDispAreaScroll->viewport()->setAutoFillBackground(true);
+    srcImgDispAreaScroll->setWidget(srcImgDispArea);
+    srcLabel->setBuddy(srcImgDispAreaScroll);
+    curImgDispAreaScroll = new QScrollArea;
+    curImgDispAreaScroll->setWidgetResizable(true);
+    curImgDispAreaScroll->viewport()->setBackgroundRole(QPalette::Light);
+    curImgDispAreaScroll->viewport()->setAutoFillBackground(true);
+    curImgDispAreaScroll->setWidget(curImgDispArea);
+    curLabel->setBuddy(curImgDispAreaScroll);
 
     centerWidget = new QWidget;
-    QVBoxLayout* leftLayout = new QVBoxLayout;
-    leftLayout->addWidget(srcImgDispArea);
-    leftLayout->addWidget(curImgDispArea);
+    QVBoxLayout* imgLayout = new QVBoxLayout;
+    imgLayout->addWidget(srcLabel);
+    imgLayout->addWidget(srcImgDispAreaScroll);
+    imgLayout->addWidget(curLabel);
+    imgLayout->addWidget(curImgDispAreaScroll);
+    QHBoxLayout* leftLayout = new QHBoxLayout;
+    leftLayout->addLayout(imgLayout);
+    leftLayout->addStretch();
     centerWidget->setLayout(leftLayout);
     setCentralWidget(centerWidget);
 
