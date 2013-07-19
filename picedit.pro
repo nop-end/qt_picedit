@@ -1,13 +1,15 @@
-QT += widgets core gui
+QT += gui widgets core
 
 SOURCES += \
+    main.cpp \
     mainwindow.cpp \
-    main.cpp
+    imagedisp.cpp \
+    selfdraw.cpp
 
 HEADERS += \
-    mainwindow.h
-
-OTHER_FILES +=
+    mainwindow.h \
+    imagedisp.h \
+    selfdraw.h
 
 RESOURCES += \
     image.qrc

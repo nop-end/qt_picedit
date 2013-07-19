@@ -1,25 +1,30 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "imagedisp.h"
+#include "selfdraw.h"
 #include <QMainWindow>
 #include <QAction>
 #include <QMenu>
 #include <QToolBar>
 #include <QString>
-#include <QImage>
+#include <QMdiArea>
 #include <QLabel>
-#include <QScrollArea>
-#include <QSpacerItem>
+
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(int h);
+    explicit MainWindow();
+
+protected:
+
 
     /*--------------- Private SLOTS ---------------*/
 private slots:
+    void updateActions();
     void newDraw();
     void openPic();
     void openVideo();
@@ -40,42 +45,16 @@ private:
     void createToolBars();
     void createLayOut();
     void createStatusBar();
-
-    void readSettings();
-    void writeSettings();
-
-    bool loadFile(const QString& fileName);
-    bool saveFile(const QString& fileName);
-
-    void setCurrentFile(const QString& fileName);
     void updateRecentFileActions();
-
+    void loadFiles();
     bool okToContinue();
+    void addImageDisp(ImageDisp* imgd);
+    void addNewDraw(SelfDraw* selfd);
 
     /*--------------- Private Members ---------------*/
 private:
-    // const value
-    const int imageHight;
-
     // widgets
-    QWidget* centerWidget;
-    QImage* srcImg;
-    QImage* curImg;
-    QLabel* srcLabel;
-    QLabel* srcImgDispArea;
-    QLabel* curLabel;
-    QLabel* curImgDispArea;
-    QScrollArea* srcImgDispAreaScroll;
-    QScrollArea* curImgDispAreaScroll;
-    QSpacerItem* hSpacer1;
-    QSpacerItem* hSpacer2;
-    QSpacerItem* vSpacer1;
-    QSpacerItem* vSpacer2;
-
-
-    // dialog
-
-
+    QMdiArea *mdiArea;
 
     // recent file
     QString curFile;

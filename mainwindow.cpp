@@ -2,13 +2,17 @@
 #include <QApplication>
 #include <QMenuBar>
 #include <QStatusBar>
-#include <QLayout>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPixmap>
-#include <QMargins>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QTimer>
+#include <QMdiSubWindow>
 
-MainWindow::MainWindow(int h):imageHight(h){
+
+MainWindow::MainWindow(){
+    mdiArea = new QMdiArea;
+    setCentralWidget(mdiArea);
+    connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
+
     createActions();
     createMenus();
     createContextMenu();
@@ -16,23 +20,42 @@ MainWindow::MainWindow(int h):imageHight(h){
     createStatusBar();
     createLayOut();
 
-    readSettings();
-
-    setWindowTitle(QString(tr("%1   copyrights: %2").arg("picEdit").arg("nop")));
-    setCurrentFile("");
+    setWindowTitle(QString(tr("%1   copyrights: %2").arg("picEdit").arg("nop-end")));
+    setAttribute(Qt::WA_DeleteOnClose);
+    loadFiles();
 }
 
 /*--------------- Private SLOTS ---------------*/
-void MainWindow::newDraw(){
+void MainWindow::updateActions(){
 
 }
 
+
+void MainWindow::newDraw(){
+//    ImageDisp* imageDispUnfilled = new ImageDisp();
+//    addImageDisp(imageDispUnfilled);
+    SelfDraw* newSelfDraw = new SelfDraw();
+    addNewDraw(newSelfDraw);
+}
+
 void MainWindow::openPic(){
+    if(okToContinue()){
+        // if you replace the "/home/hupanhust" with ".", it will guide you to the debug file folder
+        QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),"/home/hupanhust", tr("Image Files (*.*)"));
+        if(!fileName.isEmpty()){
+            ImageDisp* imageDispFilled = new ImageDisp(fileName);
+            addImageDisp(imageDispFilled);
+        }
+    }
 
 }
 
 void MainWindow::openVideo(){
 
+}
+
+void MainWindow::loadFiles(){
+    newDraw();
 }
 
 bool MainWindow::save(){
@@ -72,13 +95,13 @@ void MainWindow::about(){
 
 /*--------------- Private Functions ---------------*/
 void MainWindow::createActions(){
-    newDrawAction = new QAction(tr("&New Draw"), this);
+    newDrawAction = new QAction(tr("&New Selfdraw"), this);
     newDrawAction->setIcon(QIcon(":/images/new.png"));
     newDrawAction->setShortcut(QKeySequence::New);
     newDrawAction->setStatusTip(tr("Create a new drawing"));
     connect(newDrawAction, SIGNAL(triggered()), this, SLOT(newDraw()));
 
-    openPicAction = new QAction(tr("&Open Pic"), this);
+    openPicAction = new QAction(tr("&Open Image"), this);
     openPicAction->setIcon(QIcon(":/images/open.png"));
     openPicAction->setShortcut(QKeySequence::Open);
     openPicAction->setStatusTip(tr("Open an existing pic"));
@@ -96,7 +119,7 @@ void MainWindow::createActions(){
     saveAction->setStatusTip(tr("Save the current editting file"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
-    saveAsAction = new QAction(tr("Save %As"),this);
+    saveAsAction = new QAction(tr("Save &As"),this);
     saveAsAction->setIcon(QIcon(":/images/saveAs.png"));
     saveAsAction->setShortcut(QKeySequence::SaveAs);
     saveAsAction->setStatusTip(tr("Save the current file as another type of file"));
@@ -227,75 +250,33 @@ void MainWindow::createStatusBar(){
 }
 
 void MainWindow::createLayOut(){
-    srcImg = new QImage(":/images/main.png");
-    curImg = new QImage(":/images/main.png");
-
-    srcLabel = new QLabel(tr("&Source Image"));
-    srcImgDispArea = new QLabel;
-    srcImgDispArea->setScaledContents(true);
-    srcImgDispArea->setBaseSize(srcImg->width(),srcImg->height());
-    srcImgDispArea->setPixmap(QPixmap::fromImage(*srcImg).scaled(srcImg->width(),srcImg->height(),Qt::KeepAspectRatio));
-    curLabel = new QLabel(tr("&Current Modified Image"));
-    curImgDispArea = new QLabel;
-    curImgDispArea->setScaledContents(true);
-    curImgDispArea->setBaseSize(curImg->width(),curImg->height());
-    curImgDispArea->setPixmap(QPixmap::fromImage(*curImg).scaled(curImg->width(),curImg->height(),Qt::KeepAspectRatio));
-
-    srcImgDispAreaScroll = new QScrollArea;
-    srcImgDispAreaScroll->setWidgetResizable(true);
-    srcImgDispAreaScroll->viewport()->setBackgroundRole(QPalette::Light);
-    srcImgDispAreaScroll->viewport()->setAutoFillBackground(true);
-    srcImgDispAreaScroll->setWidget(srcImgDispArea);
-    srcLabel->setBuddy(srcImgDispAreaScroll);
-    curImgDispAreaScroll = new QScrollArea;
-    curImgDispAreaScroll->setWidgetResizable(true);
-    curImgDispAreaScroll->viewport()->setBackgroundRole(QPalette::Light);
-    curImgDispAreaScroll->viewport()->setAutoFillBackground(true);
-    curImgDispAreaScroll->setWidget(curImgDispArea);
-    curLabel->setBuddy(curImgDispAreaScroll);
-
-    centerWidget = new QWidget;
-    QVBoxLayout* imgLayout = new QVBoxLayout;
-    imgLayout->addWidget(srcLabel);
-    imgLayout->addWidget(srcImgDispAreaScroll);
-    imgLayout->addWidget(curLabel);
-    imgLayout->addWidget(curImgDispAreaScroll);
-    QHBoxLayout* leftLayout = new QHBoxLayout;
-    leftLayout->addLayout(imgLayout);
-    leftLayout->addStretch();
-    centerWidget->setLayout(leftLayout);
-    setCentralWidget(centerWidget);
-
 
 }
 
-void MainWindow::readSettings(){
-
-}
-
-void MainWindow::writeSettings(){
-
-}
-
-bool MainWindow::loadFile(const QString& fileName){
-
-    return true;
-}
-
-bool MainWindow::saveFile(const QString& fileName){
-
-    return true;
-}
-
-void MainWindow::setCurrentFile(const QString& fileName){
-
-}
 
 void MainWindow::updateRecentFileActions(){
 
 }
 
 bool MainWindow::okToContinue(){
+    if (isWindowModified()) {
+        int r = QMessageBox::warning(this, tr("PicEdit"),tr("The document has been modified.\n Do you want to save your changes?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if (r == QMessageBox::Yes) {
+            return save();
+        } else if (r == QMessageBox::Cancel) {
+            return false;
+        }
+    }
 
     return true;
+}
+
+void MainWindow::addImageDisp(ImageDisp* imgd){
+    QMdiSubWindow *subWindow = mdiArea->addSubWindow(imgd);
+    subWindow->show();
+}
+
+void MainWindow::addNewDraw(SelfDraw *selfd){
+    QMdiSubWindow *subWindow = mdiArea->addSubWindow(selfd);
+    subWindow->show();
 }
