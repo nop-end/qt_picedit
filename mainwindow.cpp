@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "piceditwindow.h"
 #include <QApplication>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -6,13 +7,16 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QMdiSubWindow>
+#include <QScrollArea>
 
 
 MainWindow::MainWindow(){
+    // set the mdiarea of mainwindow
     mdiArea = new QMdiArea;
     setCentralWidget(mdiArea);
     connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
 
+    // set the components and layouts of actions,menus,contextmenus,toolbars and statusbars
     createActions();
     createMenus();
     createContextMenu();
@@ -20,9 +24,14 @@ MainWindow::MainWindow(){
     createStatusBar();
     createLayOut();
 
+    // set the initial plain picEdit widget and display on the mdiArea
+    newEdit();
+
+    // set mainwindow title
     setWindowTitle(QString(tr("%1   copyrights: %2").arg("picEdit").arg("nop-end")));
+
+    // wipe out the heap storage on delete of the mainwindow
     setAttribute(Qt::WA_DeleteOnClose);
-    loadFiles();
 }
 
 /*--------------- Private SLOTS ---------------*/
@@ -31,20 +40,28 @@ void MainWindow::updateActions(){
 }
 
 
-void MainWindow::newDraw(){
-//    ImageDisp* imageDispUnfilled = new ImageDisp();
-//    addImageDisp(imageDispUnfilled);
-    SelfDraw* newSelfDraw = new SelfDraw();
-    addNewDraw(newSelfDraw);
+void MainWindow::newEdit(){
+    // new a picEdit widget, which is outlined by a QScrollArea
+    PicEditWindow* newImgEdit = new PicEditWindow;
+
+    // add the new picEdit widget to the mdiArea
+    QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
+    subWindow->show();
 }
 
 void MainWindow::openPic(){
+    // if the current picEdit widget is saved or not edited, then you can open a pic to display on it
     if(okToContinue()){
         // if you replace the "/home/hupanhust" with ".", it will guide you to the debug file folder
         QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),"/home/hupanhust", tr("Image Files (*.*)"));
+
+        // if file is existed and valid filename selected
         if(!fileName.isEmpty()){
-            ImageDisp* imageDispFilled = new ImageDisp(fileName);
-            addImageDisp(imageDispFilled);
+            // to fill the current selected picEdit widget with selected images, and once select more than
+            // one picture(x pictures), then new x-1 picEdit widgets to load the rest and add then all
+            PicEditWindow* newImgEdit = new PicEditWindow(fileName);
+            QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
+            subWindow->show();
         }
     }
 
@@ -54,9 +71,6 @@ void MainWindow::openVideo(){
 
 }
 
-void MainWindow::loadFiles(){
-    newDraw();
-}
 
 bool MainWindow::save(){
 
@@ -99,7 +113,7 @@ void MainWindow::createActions(){
     newDrawAction->setIcon(QIcon(":/images/new.png"));
     newDrawAction->setShortcut(QKeySequence::New);
     newDrawAction->setStatusTip(tr("Create a new drawing"));
-    connect(newDrawAction, SIGNAL(triggered()), this, SLOT(newDraw()));
+    connect(newDrawAction, SIGNAL(triggered()), this, SLOT(newEdit()));
 
     openPicAction = new QAction(tr("&Open Image"), this);
     openPicAction->setIcon(QIcon(":/images/open.png"));
@@ -133,7 +147,7 @@ void MainWindow::createActions(){
     exitAction = new QAction(tr("E&xit"), this);
     exitAction->setShortcut(tr("Alt+F4"));
     exitAction->setStatusTip(tr("Exit the application"));
-    connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));  
+    connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
     cutAction = new QAction(tr("Cu&t"), this);
     cutAction->setIcon(QIcon(":/images/cut.png"));
@@ -271,12 +285,3 @@ bool MainWindow::okToContinue(){
     return true;
 }
 
-void MainWindow::addImageDisp(ImageDisp* imgd){
-    QMdiSubWindow *subWindow = mdiArea->addSubWindow(imgd);
-    subWindow->show();
-}
-
-void MainWindow::addNewDraw(SelfDraw *selfd){
-    QMdiSubWindow *subWindow = mdiArea->addSubWindow(selfd);
-    subWindow->show();
-}

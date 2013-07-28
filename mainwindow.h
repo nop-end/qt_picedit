@@ -1,13 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "imagedisp.h"
-#include "selfdraw.h"
 #include <QMainWindow>
 #include <QAction>
 #include <QMenu>
 #include <QToolBar>
 #include <QString>
+#include <QStringList>
 #include <QMdiArea>
 #include <QLabel>
 
@@ -19,13 +18,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow();
 
-protected:
-
-
     /*--------------- Private SLOTS ---------------*/
 private slots:
     void updateActions();
-    void newDraw();
+    void newEdit();
     void openPic();
     void openVideo();
     bool save();
@@ -46,10 +42,7 @@ private:
     void createLayOut();
     void createStatusBar();
     void updateRecentFileActions();
-    void loadFiles();
     bool okToContinue();
-    void addImageDisp(ImageDisp* imgd);
-    void addNewDraw(SelfDraw* selfd);
 
     /*--------------- Private Members ---------------*/
 private:
