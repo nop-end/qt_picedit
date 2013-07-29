@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon/close.png</file>
+        <file>icon/close2.png</file>
+        <file>icon/copy.png</file>
+        <file>icon/cut.png</file>
+        <file>icon/delete.png</file>
+        <file>icon/delete2.png</file>
+        <file>icon/exit.png</file>
+        <file>icon/exit2.png</file>
+        <file>icon/mainIcon.png</file>
+        <file>icon/newFile.png</file>
+        <file>icon/newFile2.png</file>
+        <file>icon/newFile3.png</file>
+        <file>icon/newFile4.png</file>
+        <file>icon/newFile5.png</file>
+        <file>icon/newFile6.png</file>
+        <file>icon/newFile7.png</file>
+        <file>icon/newFile8.png</file>
+        <file>icon/openFile.png</file>
+        <file>icon/paste.png</file>
+        <file>icon/save.png</file>
+        <file>icon/saveAs.png</file>
+        <file>icon/select.png</file>
+        <file>icon/test.png</file>
+        <file>icon/zoomIn.png</file>
+        <file>icon/zoomIn2.png</file>
+        <file>icon/zoomOut.png</file>
+        <file>icon/zoomOut2.png</file>
+    </qresource>
+</RCC>

@@ -12,4 +12,5 @@ SOURCES += \
     piceditwindow.cpp
 
 RESOURCES += \
+    icon.qrc \
     image.qrc

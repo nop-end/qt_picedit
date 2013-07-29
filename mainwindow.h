@@ -18,6 +18,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
     /*--------------- Private SLOTS ---------------*/
 private slots:
     void updateActions();
@@ -83,8 +86,8 @@ private:
     QAction* pasteAction;
     QAction* deleteAction;
     QAction* selectSequareAction;
-    QAction* zoomAction;
-    QAction* shrinkAction;
+    QAction* zoomInAction;
+    QAction* zoomOutAction;
     QAction* aboutAction;
     QAction* aboutQtAction;
 

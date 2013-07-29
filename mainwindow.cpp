@@ -9,7 +9,7 @@
 #include <QMdiSubWindow>
 #include <QScrollArea>
 
-
+/*--------------------------------------- construct -----------------------------------------*/
 MainWindow::MainWindow(){
     // set the mdiarea of mainwindow
     mdiArea = new QMdiArea;
@@ -29,12 +29,25 @@ MainWindow::MainWindow(){
 
     // set mainwindow title
     setWindowTitle(QString(tr("%1   copyrights: %2").arg("picEdit").arg("nop-end")));
+    setWindowIcon(QIcon(":/icon/mainIcon.png"));
 
     // wipe out the heap storage on delete of the mainwindow
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-/*--------------- Private SLOTS ---------------*/
+
+/*--------------------------------------- Protect events -----------------------------------------*/
+void MainWindow::closeEvent(QCloseEvent *event){
+    mdiArea->closeAllSubWindows();
+    if(!mdiArea->subWindowList().isEmpty()){
+        event->ignore();
+    }else{
+        event->accept();
+    }
+}
+
+
+/*--------------------------------------- Private SLOTS -----------------------------------------*/
 void MainWindow::updateActions(){
 
 }
@@ -53,7 +66,8 @@ void MainWindow::openPic(){
     // if the current picEdit widget is saved or not edited, then you can open a pic to display on it
     if(okToContinue()){
         // if you replace the "/home/hupanhust" with ".", it will guide you to the debug file folder
-        QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),"/home/hupanhust", tr("Image Files (*.*)"));
+        QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),"E:/Qtproj/picEdit/image",
+                                                        tr("Image Files (*.*)"));
 
         // if file is existed and valid filename selected
         if(!fileName.isEmpty()){
@@ -109,14 +123,14 @@ void MainWindow::about(){
 
 /*--------------- Private Functions ---------------*/
 void MainWindow::createActions(){
-    newDrawAction = new QAction(tr("&New Selfdraw"), this);
-    newDrawAction->setIcon(QIcon(":/images/new.png"));
+    newDrawAction = new QAction(tr("&New"), this);
+    newDrawAction->setIcon(QIcon(":/icon/newFile6.png"));
     newDrawAction->setShortcut(QKeySequence::New);
     newDrawAction->setStatusTip(tr("Create a new drawing"));
     connect(newDrawAction, SIGNAL(triggered()), this, SLOT(newEdit()));
 
-    openPicAction = new QAction(tr("&Open Image"), this);
-    openPicAction->setIcon(QIcon(":/images/open.png"));
+    openPicAction = new QAction(tr("&Open"), this);
+    openPicAction->setIcon(QIcon(":/icon/newFile7.png"));
     openPicAction->setShortcut(QKeySequence::Open);
     openPicAction->setStatusTip(tr("Open an existing pic"));
     connect(openPicAction, SIGNAL(triggered()), this, SLOT(openPic()));
@@ -128,13 +142,13 @@ void MainWindow::createActions(){
     }
 
     saveAction = new QAction(tr("&Save"), this);
-    saveAction->setIcon(QIcon(":/images/save.png"));
+    saveAction->setIcon(QIcon(":/icon/save.png"));
     saveAction->setShortcut(QKeySequence::Save);
     saveAction->setStatusTip(tr("Save the current editting file"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
     saveAsAction = new QAction(tr("Save &As"),this);
-    saveAsAction->setIcon(QIcon(":/images/saveAs.png"));
+    saveAsAction->setIcon(QIcon(":/icon/saveAs.png"));
     saveAsAction->setShortcut(QKeySequence::SaveAs);
     saveAsAction->setStatusTip(tr("Save the current file as another type of file"));
     connect(saveAsAction, SIGNAL(triggered()), this ,SLOT(saveAs()));
@@ -150,39 +164,39 @@ void MainWindow::createActions(){
     connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
     cutAction = new QAction(tr("Cu&t"), this);
-    cutAction->setIcon(QIcon(":/images/cut.png"));
+    cutAction->setIcon(QIcon(":/icon/cut.png"));
     cutAction->setShortcut(QKeySequence::Cut);
     cutAction->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
 
     copyAction = new QAction(tr("&Copy"), this);
-    copyAction->setIcon(QIcon(":/images/copy.png"));
+    copyAction->setIcon(QIcon(":/icon/copy.png"));
     copyAction->setShortcut(QKeySequence::Copy);
     copyAction->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
 
     pasteAction = new QAction(tr("&Paste"), this);
-    pasteAction->setIcon(QIcon(":/images/paste.png"));
+    pasteAction->setIcon(QIcon(":/icon/paste.png"));
     pasteAction->setShortcut(QKeySequence::Paste);
     pasteAction->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
 
     deleteAction = new QAction(tr("&Delete"), this);
-    deleteAction->setIcon(QIcon(":/images/delete.png"));
+    deleteAction->setIcon(QIcon(":/icon/delete.png"));
     deleteAction->setShortcut(QKeySequence::Delete);
     deleteAction->setStatusTip(tr("Delete the current selection's contents"));
 
-    selectSequareAction = new QAction(tr("S&elect"), this);
-    selectSequareAction->setIcon(QIcon(":/images/selectsequare.png"));
+    selectSequareAction = new QAction(tr("Se&lect"), this);
+    selectSequareAction->setIcon(QIcon(":/icon/select.png"));
     selectSequareAction->setShortcut(tr("Ctrl+Q"));
     selectSequareAction->setStatusTip(tr("Select the choosen sequare area to the clipboard"));
 
-    zoomAction = new QAction(tr("&Zoom"), this);
-    zoomAction->setIcon(QIcon(":/images/zoom.png"));
-    zoomAction->setShortcut(QKeySequence::ZoomOut);
-    zoomAction->setStatusTip(tr("Zoom out the picture"));
+    zoomInAction = new QAction(tr("&ZoomIn"), this);
+    zoomInAction->setIcon(QIcon(":/icon/zoomIn.png"));
+    zoomInAction->setShortcut(QKeySequence::ZoomIn);
+    zoomInAction->setStatusTip(tr("Zoom in the picture"));
 
-    shrinkAction = new QAction(tr("S&hrink"), this);
-    shrinkAction->setIcon(QIcon(":/images/shrink.png"));
-    shrinkAction->setShortcut(QKeySequence::ZoomIn);
-    shrinkAction->setStatusTip(tr("Zoom in the picture"));
+    zoomOutAction = new QAction(tr("Zoom&Out"), this);
+    zoomOutAction->setIcon(QIcon(":/icon/zoomOut.png"));
+    zoomOutAction->setShortcut(QKeySequence::ZoomOut);
+    zoomOutAction->setStatusTip(tr("Zoom out the picture"));
 
     aboutAction = new QAction(tr("&About"), this);
     aboutAction->setStatusTip(tr("Show the application's About box"));
@@ -213,8 +227,8 @@ void MainWindow::createMenus(){
     editMenu->addAction(pasteAction);
     editMenu->addAction(deleteAction);
     editMenu->addAction(selectSequareAction);
-    editMenu->addAction(zoomAction);
-    editMenu->addAction(shrinkAction);
+    editMenu->addAction(zoomInAction);
+    editMenu->addAction(zoomOutAction);
 
     toolsMenu = menuBar()->addMenu(tr("&Tools"));
 
@@ -245,8 +259,8 @@ void MainWindow::createToolBars(){
     editToolBar->addAction(pasteAction);
     editToolBar->addAction(deleteAction);
     editToolBar->addAction(selectSequareAction);
-    editToolBar->addAction(zoomAction);
-    editToolBar->addAction(shrinkAction);
+    editToolBar->addAction(zoomInAction);
+    editToolBar->addAction(zoomOutAction);
 }
 
 void MainWindow::createStatusBar(){
@@ -274,7 +288,9 @@ void MainWindow::updateRecentFileActions(){
 
 bool MainWindow::okToContinue(){
     if (isWindowModified()) {
-        int r = QMessageBox::warning(this, tr("PicEdit"),tr("The document has been modified.\n Do you want to save your changes?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        int r = QMessageBox::warning(this, tr("PicEdit"),
+                                     tr("The images has been modified.\n Do you want to save your changes?"),
+                                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         if (r == QMessageBox::Yes) {
             return save();
         } else if (r == QMessageBox::Cancel) {
