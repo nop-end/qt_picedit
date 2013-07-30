@@ -12,8 +12,11 @@ class ImgDisp : public QWidget
     Q_OBJECT
     // declare three attributes of picDisp widget and the corresponding read & write functions
     Q_PROPERTY(QColor penColor READ penColor WRITE setPenColor)
-    Q_PROPERTY(QImage curImgDisp READ curImgDisp WRITE setCurImgDisp)
+    Q_PROPERTY(QImage curImgFile READ curImgFile WRITE setCurImgFile)
     Q_PROPERTY(int zoomFactor READ zoomFactor WRITE setZoomFactor)
+
+signals:
+    void curImgWasModified();
 
 public:
     explicit ImgDisp(const QString& fileName = 0, QWidget *parent = 0);
@@ -21,8 +24,8 @@ public:
     // ImgDisp attributes operation functions
     QColor penColor() const {return curColor;}
     void setPenColor(const QColor& newColor);
-    QImage* curImgDisp() const {return curImg;}
-    void setCurImgDisp(const QImage& newImg);
+    QImage* curImgFile() const {return curImg;}
+    void setCurImgFile(const QImage& newImg);
     int zoomFactor() const {return curZoom;}
     void setZoomFactor(const int newZoom);
 
@@ -32,6 +35,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
     QSize sizeHint() const;
+
+private slots:
+    void newPaintOntheImg();
 
 private:
     // private functions

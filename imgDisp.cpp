@@ -2,6 +2,8 @@
 
 #include <QPainter>
 
+
+/*--------------------------------------- public funtions -----------------------------------------*/
 // constructor
 ImgDisp::ImgDisp(const QString& fileName, QWidget *parent) :QWidget(parent)
 {
@@ -12,16 +14,19 @@ ImgDisp::ImgDisp(const QString& fileName, QWidget *parent) :QWidget(parent)
 
     // initial color and zoom factor
     curColor = Qt::black;
-    curZoom = 8;
+    curZoom = 4;
 
     // blank fill or image fill
     if(fileName != 0){
         srcImg = new QImage(fileName);
     }else{
-        srcImg = new QImage(16,16, QImage::Format_ARGB32);
+        srcImg = new QImage(240,180,QImage::Format_ARGB32);
         srcImg->fill(qRgba(0,0,0,0));
     }
     curImg = new QImage(*srcImg);
+
+    // slots and signals
+
 }
 
 // returns the zoomed size
@@ -36,7 +41,7 @@ void ImgDisp::setPenColor(const QColor& newColor){
 }
 
 // set new image to display on the choosen(active) widget
-void ImgDisp::setCurImgDisp(const QImage& newImg){
+void ImgDisp::setCurImgFile(const QImage& newImg){
     if(newImg != *curImg){
         *curImg = newImg.convertToFormat(QImage::Format_ARGB32);
         // new draw to this window by using newImage to replace curImage
@@ -58,6 +63,7 @@ void ImgDisp::setZoomFactor(int newZoom){
     }
 }
 
+/*--------------------------------------- protected events -----------------------------------------*/
 // reload the paintevent function to draw zoomed images on the hint area
 void ImgDisp::paintEvent(QPaintEvent *event){
     // temp a painter
@@ -82,11 +88,6 @@ void ImgDisp::paintEvent(QPaintEvent *event){
     }
 }
 
-// returns the zoomed rect of one pixel
-QRect ImgDisp::pixRect(int i, int j) const{
-    return QRect(curZoom * i, curZoom * j , curZoom, curZoom);
-}
-
 // set points color by click the mouse left or right button
 void ImgDisp::mousePressEvent(QMouseEvent *event){
     if(event->button() == Qt::LeftButton){
@@ -106,6 +107,14 @@ void ImgDisp::mouseMoveEvent(QMouseEvent *event){
     }
 }
 
+
+/*--------------------------------------- private slots -----------------------------------------*/
+void ImgDisp::newPaintOntheImg(){
+    emit curImgWasModified();
+}
+
+
+/*--------------------------------------- private functions -----------------------------------------*/
 // set color of every pix of the real image not the zoomed area
 void ImgDisp::setImgPix(const QPoint &pos, bool opaque){
     int i = pos.x() / curZoom;
@@ -121,6 +130,10 @@ void ImgDisp::setImgPix(const QPoint &pos, bool opaque){
     }
 }
 
+// returns the zoomed rect of one pixel
+QRect ImgDisp::pixRect(int i, int j) const{
+    return QRect(curZoom * i, curZoom * j , curZoom, curZoom);
+}
 
 
 

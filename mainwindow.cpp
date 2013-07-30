@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "piceditwindow.h"
 #include <QApplication>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -9,7 +8,8 @@
 #include <QMdiSubWindow>
 #include <QScrollArea>
 
-/*--------------------------------------- construct -----------------------------------------*/
+/*--------------------------------------- public functions -----------------------------------------*/
+// constructor
 MainWindow::MainWindow(){
     // set the mdiarea of mainwindow
     mdiArea = new QMdiArea;
@@ -38,7 +38,10 @@ MainWindow::MainWindow(){
 
 /*--------------------------------------- Protect events -----------------------------------------*/
 void MainWindow::closeEvent(QCloseEvent *event){
+    // close all the subwindow first, and this will encounter the save action of those documents
     mdiArea->closeAllSubWindows();
+
+    // if successfully closed all the subwindow, event will be accept
     if(!mdiArea->subWindowList().isEmpty()){
         event->ignore();
     }else{
@@ -49,6 +52,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
 
 /*--------------------------------------- Private SLOTS -----------------------------------------*/
 void MainWindow::updateActions(){
+
 
 }
 
@@ -64,21 +68,18 @@ void MainWindow::newEdit(){
 
 void MainWindow::openPic(){
     // if the current picEdit widget is saved or not edited, then you can open a pic to display on it
-    if(okToContinue()){
-        // if you replace the "/home/hupanhust" with ".", it will guide you to the debug file folder
-        QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),"E:/Qtproj/picEdit/image",
-                                                        tr("Image Files (*.*)"));
+    // if you replace the "/home/hupanhust" with ".", it will guide you to the debug file folder
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),"E:/Qtproj/picEdit/image",
+                                                    tr("Image Files (*.*)"));
 
-        // if file is existed and valid filename selected
-        if(!fileName.isEmpty()){
-            // to fill the current selected picEdit widget with selected images, and once select more than
-            // one picture(x pictures), then new x-1 picEdit widgets to load the rest and add then all
-            PicEditWindow* newImgEdit = new PicEditWindow(fileName);
-            QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
-            subWindow->show();
-        }
+    // if file is existed and valid filename selected
+    if(!fileName.isEmpty()){
+        // to fill the current selected picEdit widget with selected images, and once select more than
+        // one picture(x pictures), then new x-1 picEdit widgets to load the rest and add then all
+        PicEditWindow* newImgEdit = new PicEditWindow(fileName);
+        QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
+        subWindow->show();
     }
-
 }
 
 void MainWindow::openVideo(){
@@ -87,13 +88,19 @@ void MainWindow::openVideo(){
 
 
 bool MainWindow::save(){
-
-    return true;
+    if(activePicEdit()){
+        return activePicEdit()->save();
+    }else{
+        return false;
+    }
 }
 
 bool MainWindow::saveAs(){
-
-    return true;
+    if(activePicEdit()){
+        return activePicEdit()->saveAs();
+    }else{
+        return false;
+    }
 }
 
 void MainWindow::preStep(){
@@ -121,7 +128,7 @@ void MainWindow::about(){
 }
 
 
-/*--------------- Private Functions ---------------*/
+/*--------------------------------------- Private functions -----------------------------------------*/
 void MainWindow::createActions(){
     newDrawAction = new QAction(tr("&New"), this);
     newDrawAction->setIcon(QIcon(":/icon/newFile6.png"));
@@ -278,7 +285,8 @@ void MainWindow::createStatusBar(){
 }
 
 void MainWindow::createLayOut(){
-
+    // set the window to be maximized when open up
+    setWindowState(Qt::WindowMaximized);
 }
 
 
@@ -286,18 +294,13 @@ void MainWindow::updateRecentFileActions(){
 
 }
 
-bool MainWindow::okToContinue(){
-    if (isWindowModified()) {
-        int r = QMessageBox::warning(this, tr("PicEdit"),
-                                     tr("The images has been modified.\n Do you want to save your changes?"),
-                                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        if (r == QMessageBox::Yes) {
-            return save();
-        } else if (r == QMessageBox::Cancel) {
-            return false;
-        }
-    }
 
-    return true;
+PicEditWindow* MainWindow::activePicEdit(){
+    QMdiSubWindow* subWindow = mdiArea->activeSubWindow();
+    if(subWindow){
+        return qobject_cast<PicEditWindow*>(subWindow->widget());
+    }else{
+        return 0;
+    }
 }
 
