@@ -32,6 +32,7 @@ private:
 
     ImgDisp* curImgDisp;
     QString* curFile;
+    QString* fulCurFile;
     bool isUntitled;
 
 };

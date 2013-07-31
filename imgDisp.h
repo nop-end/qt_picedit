@@ -36,9 +36,6 @@ protected:
     void paintEvent(QPaintEvent *event);
     QSize sizeHint() const;
 
-private slots:
-    void newPaintOntheImg();
-
 private:
     // private functions
     void setImgPix(const QPoint& point, bool opaque);

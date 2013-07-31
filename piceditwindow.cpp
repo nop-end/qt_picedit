@@ -16,11 +16,13 @@
 PicEditWindow::PicEditWindow(const QString& fileName, QWidget *parent) :QWidget(parent){
     // new a ImgDisp -- blank or fill with image
     curImgDisp = new ImgDisp(fileName);
+    curFile = new QString;
+    fulCurFile = new QString;
 
     // new a scrollArea as the image frame
     QScrollArea* curImgFrame = new QScrollArea;
     curImgFrame->setAlignment(Qt::AlignCenter);
-    curImgFrame->setWidgetResizable(false);
+    curImgFrame->setWidgetResizable(true);
     curImgFrame->viewport()->setAutoFillBackground(true);
     curImgFrame->viewport()->setBackgroundRole(QPalette::Dark);
     curImgFrame->setWidget(curImgDisp);
@@ -44,7 +46,8 @@ PicEditWindow::PicEditWindow(const QString& fileName, QWidget *parent) :QWidget(
 void PicEditWindow::settitle(const QString &fileName){
     static int documentNumber = 1;
     if(fileName != 0){
-        curFile = new QString(QFileInfo(fileName).fileName());
+        *curFile = QFileInfo(fileName).fileName();
+        *fulCurFile = fileName;
         isUntitled = false;
     }else{
         curFile = new QString(tr("Untitled%1.png").arg(documentNumber));
@@ -59,7 +62,8 @@ bool PicEditWindow::save(){
     if(isUntitled){
         return saveAs();
     }else{
-        return saveFile(*curFile);
+        // so that the file will be saved in the first-saved place since full file path is applied
+        return saveFile(*fulCurFile);
     }
 }
 
@@ -67,7 +71,8 @@ bool PicEditWindow::save(){
 bool PicEditWindow::saveAs(){
     QString* selectedFilter = new QString("*.jpg");
     // set c:/ as the default file save path
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Save As"),"C:/",
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Save As"),
+                                                    "C:/" + QFileInfo(*curFile).fileName(),
                                                     tr("(*.png) ;;(*.bmp);; (*.jpg);;(*.*)"),
                                                     selectedFilter);
     delete selectedFilter;
@@ -81,11 +86,13 @@ bool PicEditWindow::saveAs(){
 bool PicEditWindow::okToClose(){
     if (isWindowModified()) {
         int r = QMessageBox::warning(this, tr("PicEdit"),
-                                     tr("The images has been modified.\n Do you want to save your changes?"),
+                                     QFileInfo(*curFile).fileName() + tr("has been modified.\n Do you want to save your changes?"),
                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         if (r == QMessageBox::Yes) {
             return save();
-        } else if (r == QMessageBox::Cancel) {
+        }else if (r == QMessageBox::No){
+            return true;
+        }else if (r == QMessageBox::Cancel) {
             return false;
         }
     }
@@ -123,9 +130,13 @@ bool PicEditWindow::saveFile(const QString &fileName){
     // restore cursor state
     QApplication::restoreOverrideCursor();
 
+    // restore window modify state
+    setWindowModified(false);
+
     return true;
 }
 
+// set that the current active picEdit subwindow has been modified
 void PicEditWindow::setPicEditModified(){
     setWindowModified(true);
 }

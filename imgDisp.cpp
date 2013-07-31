@@ -20,13 +20,10 @@ ImgDisp::ImgDisp(const QString& fileName, QWidget *parent) :QWidget(parent)
     if(fileName != 0){
         srcImg = new QImage(fileName);
     }else{
-        srcImg = new QImage(240,180,QImage::Format_ARGB32);
+        srcImg = new QImage(40,30,QImage::Format_ARGB32);
         srcImg->fill(qRgba(0,0,0,0));
     }
     curImg = new QImage(*srcImg);
-
-    // slots and signals
-
 }
 
 // returns the zoomed size
@@ -108,12 +105,6 @@ void ImgDisp::mouseMoveEvent(QMouseEvent *event){
 }
 
 
-/*--------------------------------------- private slots -----------------------------------------*/
-void ImgDisp::newPaintOntheImg(){
-    emit curImgWasModified();
-}
-
-
 /*--------------------------------------- private functions -----------------------------------------*/
 // set color of every pix of the real image not the zoomed area
 void ImgDisp::setImgPix(const QPoint &pos, bool opaque){
@@ -126,7 +117,11 @@ void ImgDisp::setImgPix(const QPoint &pos, bool opaque){
         }else{
             curImg->setPixel(i, j, qRgba(0,0,0,0));
         }
+        // this will lead a paintEvent
         update(pixRect(i, j));
+
+        // emit signals that this image has been modified
+        emit curImgWasModified();
     }
 }
 

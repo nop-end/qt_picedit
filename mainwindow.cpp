@@ -15,6 +15,12 @@ MainWindow::MainWindow(){
     mdiArea = new QMdiArea;
     setCentralWidget(mdiArea);
     connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
+    // set the subwindow in a tab view mode
+//    mdiArea->setDocumentMode(false);
+//    mdiArea->setViewMode(QMdiArea::TabbedView);
+//    mdiArea->setTabShape(QTabWidget::Triangular);
+//    mdiArea->setTabsMovable(true);
+//    mdiArea->setTabsClosable(true);
 
     // set the components and layouts of actions,menus,contextmenus,toolbars and statusbars
     createActions();
@@ -38,14 +44,17 @@ MainWindow::MainWindow(){
 
 /*--------------------------------------- Protect events -----------------------------------------*/
 void MainWindow::closeEvent(QCloseEvent *event){
-    // close all the subwindow first, and this will encounter the save action of those documents
-    mdiArea->closeAllSubWindows();
+    // if the whole program is ok to close
+    if(okToClose()){
+        // close all the subwindow first, and this will encounter the save action of those documents
+        mdiArea->closeAllSubWindows();
 
-    // if successfully closed all the subwindow, event will be accept
-    if(!mdiArea->subWindowList().isEmpty()){
-        event->ignore();
-    }else{
-        event->accept();
+        // if successfully closed all the subwindow, event will be accept
+        if(!mdiArea->subWindowList().isEmpty()){
+            event->ignore();
+        }else{
+            event->accept();
+        }
     }
 }
 
@@ -119,9 +128,6 @@ void MainWindow::updateStatusBar(){
 
 }
 
-void MainWindow::picModified(){
-
-}
 
 void MainWindow::about(){
 
@@ -304,3 +310,32 @@ PicEditWindow* MainWindow::activePicEdit(){
     }
 }
 
+
+// testify if there is unsaved documents among all the subwindows
+bool MainWindow::nonSavedSubwindowExisit(){
+    int subWindowNum = mdiArea->subWindowList().size();
+    for(int i = 0; i < subWindowNum; i ++){
+        if(mdiArea->subWindowList().at(i)->isWindowModified() == true){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// to display a warning while close the whole program
+bool MainWindow::okToClose(){
+        if (nonSavedSubwindowExisit()) {
+        int r = QMessageBox::warning(this, tr("Close picEdit"),
+                                     tr("There are images that has been modified.\n Do you want to close?"),
+                                     QMessageBox::Yes |  QMessageBox::Cancel);
+        if (r == QMessageBox::Yes) {
+            return true;
+        }else if (r == QMessageBox::Cancel) {
+            return false;
+        }
+    }
+
+    return true;
+}

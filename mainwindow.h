@@ -35,7 +35,6 @@ private slots:
     void nextStep();
     void openRecentFile();
     void updateStatusBar();
-    void picModified();
     void about();
 
     /*--------------- Private Functions ---------------*/
@@ -48,6 +47,8 @@ private:
     void createStatusBar();
     void updateRecentFileActions();
     PicEditWindow* activePicEdit();
+    bool nonSavedSubwindowExisit();
+    bool okToClose();
 
 
     /*--------------- Private Members ---------------*/
