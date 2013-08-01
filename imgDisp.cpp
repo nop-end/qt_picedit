@@ -1,6 +1,8 @@
 #include "imgDisp.h"
 
 #include <QPainter>
+#include <QPixmap>
+#include <QSizePolicy>
 
 
 /*--------------------------------------- public funtions -----------------------------------------*/
@@ -20,10 +22,16 @@ ImgDisp::ImgDisp(const QString& fileName, QWidget *parent) :QWidget(parent)
     if(fileName != 0){
         srcImg = new QImage(fileName);
     }else{
-        srcImg = new QImage(40,30,QImage::Format_ARGB32);
+        srcImg = new QImage(120,90,QImage::Format_ARGB32);
         srcImg->fill(qRgba(0,0,0,0));
     }
     curImg = new QImage(*srcImg);
+
+    // new a label as the ImgDispArea
+    curImgArea = new QLabel;
+    curImgArea->setPixmap(QPixmap::fromImage(*curImg));
+
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 // returns the zoomed size
@@ -40,6 +48,10 @@ void ImgDisp::setPenColor(const QColor& newColor){
 // set new image to display on the choosen(active) widget
 void ImgDisp::setCurImgFile(const QImage& newImg){
     if(newImg != *curImg){
+        // if curImg has already been newed, delete it  first
+        if(!curImg->isNull()){
+            delete curImg;
+        }
         *curImg = newImg.convertToFormat(QImage::Format_ARGB32);
         // new draw to this window by using newImage to replace curImage
         update();

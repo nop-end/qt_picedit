@@ -6,6 +6,8 @@
 #include <QImage>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QLabel>
+
 
 class ImgDisp : public QWidget
 {
@@ -28,12 +30,14 @@ public:
     void setCurImgFile(const QImage& newImg);
     int zoomFactor() const {return curZoom;}
     void setZoomFactor(const int newZoom);
+    QLabel* curImgAreaLabel() const {return curImgArea;}
 
     // redef of event functions
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
+    //void resizeEvent(QResizeEvent *event);
     QSize sizeHint() const;
 
 private:
@@ -42,6 +46,7 @@ private:
     QRect pixRect(int x, int y) const;
 
     // private attributes
+    QLabel* curImgArea;
     QColor curColor;
     QImage* srcImg;
     QImage* curImg;

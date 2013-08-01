@@ -1,8 +1,5 @@
 #include "piceditwindow.h"
 #include <QPalette>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QScrollArea>
 #include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
@@ -11,24 +8,28 @@
 #include <QBuffer>
 #include <QApplication>
 
+
 /*--------------------------------------- public funtions -----------------------------------------*/
 // constructor
 PicEditWindow::PicEditWindow(const QString& fileName, QWidget *parent) :QWidget(parent){
     // new a ImgDisp -- blank or fill with image
     curImgDisp = new ImgDisp(fileName);
+
+
+    // file name
     curFile = new QString;
     fulCurFile = new QString;
 
-    // new a scrollArea as the image frame
-    QScrollArea* curImgFrame = new QScrollArea;
-    curImgFrame->setAlignment(Qt::AlignCenter);
-    curImgFrame->setWidgetResizable(true);
+    // new a scrollArea as the image disp frame
+    curImgFrame = new QScrollArea;
+    curImgFrame->setAlignment(Qt::AlignLeft & Qt::AlignTop);
+    curImgFrame->setWidgetResizable(false);
     curImgFrame->viewport()->setAutoFillBackground(true);
     curImgFrame->viewport()->setBackgroundRole(QPalette::Dark);
     curImgFrame->setWidget(curImgDisp);
 
     // set the layout
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    hLayout = new QHBoxLayout;
     hLayout->addWidget(curImgFrame);
     setLayout(hLayout);
 

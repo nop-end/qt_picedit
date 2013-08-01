@@ -11,17 +11,6 @@
 /*--------------------------------------- public functions -----------------------------------------*/
 // constructor
 MainWindow::MainWindow(){
-    // set the mdiarea of mainwindow
-    mdiArea = new QMdiArea;
-    setCentralWidget(mdiArea);
-    connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
-    // set the subwindow in a tab view mode
-//    mdiArea->setDocumentMode(false);
-//    mdiArea->setViewMode(QMdiArea::TabbedView);
-//    mdiArea->setTabShape(QTabWidget::Triangular);
-//    mdiArea->setTabsMovable(true);
-//    mdiArea->setTabsClosable(true);
-
     // set the components and layouts of actions,menus,contextmenus,toolbars and statusbars
     createActions();
     createMenus();
@@ -30,8 +19,9 @@ MainWindow::MainWindow(){
     createStatusBar();
     createLayOut();
 
-    // set the initial plain picEdit widget and display on the mdiArea
-    newEdit();
+    // remove the "set the initial plain picEdit widget and display on the mdiArea"
+    // initial without a new untitled file
+    //newEdit();
 
     // set mainwindow title
     setWindowTitle(QString(tr("%1   copyrights: %2").arg("picEdit").arg("nop-end")));
@@ -291,6 +281,20 @@ void MainWindow::createStatusBar(){
 }
 
 void MainWindow::createLayOut(){
+    // set the mdiarea of mainwindow, if set tab view, use setdocumentmode & settabview
+    mdiArea = new QMdiArea;
+    setCentralWidget(mdiArea);
+    connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
+    // set the subwindow in a tab view mode
+    mdiArea->setViewMode(QMdiArea::TabbedView);
+    mdiArea->setTabShape(QTabWidget::Triangular);
+    mdiArea->setTabsMovable(true);
+    mdiArea->setTabsClosable(true);
+
+    // set background color
+    QPalette pa;
+    pa.setColor(QPalette::Background, QColor(0,0,0,255));
+
     // set the window to be maximized when open up
     setWindowState(Qt::WindowMaximized);
 }
@@ -326,7 +330,7 @@ bool MainWindow::nonSavedSubwindowExisit(){
 
 // to display a warning while close the whole program
 bool MainWindow::okToClose(){
-        if (nonSavedSubwindowExisit()) {
+    if (nonSavedSubwindowExisit()) {
         int r = QMessageBox::warning(this, tr("Close picEdit"),
                                      tr("There are images that has been modified.\n Do you want to close?"),
                                      QMessageBox::Yes |  QMessageBox::Cancel);

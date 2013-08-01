@@ -4,6 +4,11 @@
 #include "imgDisp.h"
 #include <QWidget>
 #include <QString>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QScrollArea>
+#include <QSplitter>
+
 
 class PicEditWindow : public QWidget
 {
@@ -29,7 +34,8 @@ private slots:
 private:
     bool saveFile(const QString& fileName);
 
-
+    QScrollArea* curImgFrame;
+    QHBoxLayout* hLayout;
     ImgDisp* curImgDisp;
     QString* curFile;
     QString* fulCurFile;
