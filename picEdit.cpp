@@ -115,8 +115,24 @@ void PicEdit::mouseMoveEvent(QMouseEvent *event){
 
 /*--------------------------------------- private slots -----------------------------------------*/
 bool PicEdit::saveFile(const QString &fileName){
+    // method 1: save file directly
     curImg->save(fileName,"png",100);
+
+    // method 2: write into byte array, not fully realized yet -- filename
+    /*QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    curImgDisp->curImgFile()->save(&buffer,"PNG",100);*/
+
     return true;
+}
+
+void PicEdit::reSizeSelf(const QSize &size){
+
+}
+
+void PicEdit::reZoomSelf(int newZoom){
+    setZoomFactor(newZoom + curZoom);
 }
 
 

@@ -59,21 +59,7 @@ void MainWindow::updateActions(){
 
 
 void MainWindow::newEdit(){
-    // new a picEdit widget, which is outlined by a QScrollArea
-    PicEdit* newImgEdit = new PicEdit;
-    PicEditWindow* newImgContainer = new PicEditWindow;
-    newImgContainer->setWidget(newImgEdit);
-    newImgContainer->setWidgetResizable(false);
-
-    // signals and slots
-    connect(newImgEdit,SIGNAL(curImgWasModified()),newImgContainer,SLOT(setPicEditModified()));
-    connect(newImgContainer,SIGNAL(saveImgFile(const QString&)),newImgEdit,SLOT(saveFile(const QString&)));
-
-    // add the new picEdit widget to the mdiArea
-    QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgContainer);
-    subWindow->setContentsMargins(0,0,0,0);
-
-    subWindow->show();
+    addNewPicEdit();
 }
 
 void MainWindow::openPic(){
@@ -84,21 +70,7 @@ void MainWindow::openPic(){
 
     // if file is existed and valid filename selected
     if(!fileName.isEmpty()){
-        // to fill the current selected picEdit widget with selected images, and once select more than
-        // one picture(x pictures), then new x-1 picEdit widgets to load the rest and add then all
-        PicEdit* newImgEdit = new PicEdit(fileName);
-        PicEditWindow* newImgContainer = new PicEditWindow(fileName);
-        newImgContainer->setWidget(newImgEdit);
-        newImgContainer->setWidgetResizable(false);
-
-        // signals and slots
-        connect(newImgEdit,SIGNAL(curImgWasModified()),newImgContainer,SLOT(setPicEditModified()));
-        connect(newImgContainer,SIGNAL(saveImgFile(const QString&)),newImgEdit,SLOT(saveFile(const QString&)));
-
-        // add the new picEdit widget to the mdiArea
-        QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgContainer);
-        subWindow->setContentsMargins(0,0,0,0);
-        subWindow->show();
+        addNewPicEdit(fileName);
     }
 }
 
@@ -359,4 +331,25 @@ bool MainWindow::okToClose(){
     }
 
     return true;
+}
+
+void MainWindow::addNewPicEdit(const QString& fileName){
+    // new a picEdit widget, which is outlined by a QScrollArea
+    PicEdit* newImgEdit = new PicEdit(fileName);
+    PicEditWindow* newImgContainer = new PicEditWindow(fileName);
+    newImgContainer->setWidgetResizable(false);
+    newImgContainer->setWidget(newImgEdit);
+
+    // signals and slots
+    connect(newImgEdit,SIGNAL(curImgWasModified()),newImgContainer,SLOT(setPicEditModified()));
+    connect(newImgContainer,SIGNAL(saveImgFile(const QString&)),newImgEdit,SLOT(saveFile(const QString&)));
+    connect(newImgContainer,SIGNAL(reSizePicEdit(const QSize&)),newImgEdit,SLOT(reSizeSelf(const QSize&)));
+    connect(newImgContainer,SIGNAL(reZoomPicEdit(int)),newImgEdit,SLOT(reZoomSelf(int)));
+
+    // add the new picEdit widget to the mdiArea
+    QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgContainer);
+    subWindow->setContentsMargins(0,0,0,0);
+
+    // show subWindow
+    subWindow->show();
 }

@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QScrollArea>
 #include <QCloseEvent>
+#include <QSize>
 
 class PicEditWindow : public QScrollArea
 {
@@ -14,6 +15,8 @@ class PicEditWindow : public QScrollArea
 
 signals:
     void saveImgFile(const QString& fileName);
+    void reSizePicEdit(const QSize& size);
+    void reZoomPicEdit(int newZoom);
 
 public:
     explicit PicEditWindow(const QString& fileName = 0, QScrollArea* parent = 0);
@@ -26,6 +29,8 @@ public:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 
 private slots:
@@ -35,7 +40,6 @@ private slots:
 private:
     bool saveFile(const QString& fileName);
 
-    QScrollArea* curImgFrame;
     QString* curFile;
     QString* fulCurFile;
     bool isUntitled;

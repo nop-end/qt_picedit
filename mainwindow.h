@@ -48,6 +48,7 @@ private:
     PicEditWindow* activePicEdit();
     bool nonSavedSubwindowExisit();
     bool okToClose();
+    void addNewPicEdit(const QString& fileName = 0);
 
 
     /*--------------- Private Members ---------------*/

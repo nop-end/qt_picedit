@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QLabel>
+#include <QSize>
 
 
 class PicEdit : public QWidget
@@ -19,9 +20,6 @@ class PicEdit : public QWidget
 
 signals:
     void curImgWasModified();
-
-public slots:
-    bool saveFile(const QString& fileName);
 
 public:
     explicit PicEdit(const QString& fileName = 0, QWidget *parent = 0);
@@ -40,6 +38,12 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
     QSize sizeHint() const;
+
+private slots:
+    bool saveFile(const QString& fileName);
+    void reSizeSelf(const QSize& size);
+    void reZoomSelf(int newZoom);
+
 
 private:
     // private functions

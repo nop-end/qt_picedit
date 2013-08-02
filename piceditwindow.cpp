@@ -18,6 +18,7 @@ PicEditWindow::PicEditWindow(const QString& fileName, QScrollArea *parent) :QScr
 
     // set title and icon
     settitle(fileName);
+    setBackgroundRole(QPalette::Dark);
 
     // once close, delete all heap memory
     setAttribute(Qt::WA_DeleteOnClose);
@@ -64,6 +65,7 @@ bool PicEditWindow::saveAs(){
     }
 }
 
+// check if the current single document is saved that ok to close
 bool PicEditWindow::okToClose(){
     if (isWindowModified()) {
         int r = QMessageBox::warning(this, tr("PicEdit"),
@@ -82,12 +84,25 @@ bool PicEditWindow::okToClose(){
 }
 
 /*--------------------------------------- Protect events -----------------------------------------*/
+// indicate to save the unsaved and untitiled
 void PicEditWindow::closeEvent(QCloseEvent *event){
     if(okToClose()){
         event->accept();
     }else{
         event->ignore();
     }
+}
+
+// indicate to resize the picEdit area
+void PicEditWindow::resizeEvent(QResizeEvent *event){
+    const QSize size = event->size();
+    emit reSizePicEdit(size);
+}
+
+// set the zoomIn and zoomOut
+void PicEditWindow::wheelEvent(QWheelEvent *event){
+    int wheelStep = event->delta() / 120;
+    emit reZoomPicEdit(wheelStep);
 }
 
 
@@ -98,15 +113,9 @@ bool PicEditWindow::saveFile(const QString &fileName){
     // set cursor as wait state
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    // method 1: save file directly
+    // emit save file signal
     emit saveImgFile(fileName);
     settitle(fileName);
-
-    // method 2: write into byte array, not fully realized yet -- filename
-    /*QByteArray ba;
-    QBuffer buffer(&ba);
-    buffer.open(QIODevice::WriteOnly);
-    curImgDisp->curImgFile()->save(&buffer,"PNG",100);*/
 
     // restore cursor state
     QApplication::restoreOverrideCursor();
@@ -121,11 +130,3 @@ bool PicEditWindow::saveFile(const QString &fileName){
 void PicEditWindow::setPicEditModified(){
     setWindowModified(true);
 }
-
-
-
-
-
-
-
-
