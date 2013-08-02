@@ -22,14 +22,10 @@ ImgDisp::ImgDisp(const QString& fileName, QWidget *parent) :QWidget(parent)
     if(fileName != 0){
         srcImg = new QImage(fileName);
     }else{
-        srcImg = new QImage(120,90,QImage::Format_ARGB32);
+        srcImg = new QImage(40,30,QImage::Format_ARGB32);
         srcImg->fill(qRgba(0,0,0,0));
     }
     curImg = new QImage(*srcImg);
-
-    // new a label as the ImgDispArea
-    curImgArea = new QLabel;
-    curImgArea->setPixmap(QPixmap::fromImage(*curImg));
 
     setAttribute(Qt::WA_DeleteOnClose);
 }
@@ -77,8 +73,8 @@ void ImgDisp::setZoomFactor(int newZoom){
 void ImgDisp::paintEvent(QPaintEvent *event){
     // temp a painter
     QPainter painter(this);
-    for(int i = 0; i < curImg->width(); ++i){
-        for(int j = 0; j < curImg->height(); ++j){
+    for(int i = 0; i < curImg->width(); i++){
+        for(int j = 0; j < curImg->height(); j++){
             // one rect represents one zoomed pixel
             QRect rect = pixRect(i,j);
             // QRegion is the best tool for minimizing the amount of screen area to be updated by a repaint

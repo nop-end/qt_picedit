@@ -7,7 +7,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QScrollArea>
-#include <QSplitter>
+#include <QPushButton>
 
 
 class PicEditWindow : public QWidget
@@ -34,6 +34,8 @@ private slots:
 private:
     bool saveFile(const QString& fileName);
 
+    QPushButton* ok;
+    QPushButton* no;
     QScrollArea* curImgFrame;
     QHBoxLayout* hLayout;
     ImgDisp* curImgDisp;

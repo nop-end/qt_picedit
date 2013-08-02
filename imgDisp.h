@@ -30,7 +30,6 @@ public:
     void setCurImgFile(const QImage& newImg);
     int zoomFactor() const {return curZoom;}
     void setZoomFactor(const int newZoom);
-    QLabel* curImgAreaLabel() const {return curImgArea;}
 
     // redef of event functions
 protected:
@@ -46,7 +45,6 @@ private:
     QRect pixRect(int x, int y) const;
 
     // private attributes
-    QLabel* curImgArea;
     QColor curColor;
     QImage* srcImg;
     QImage* curImg;

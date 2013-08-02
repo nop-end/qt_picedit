@@ -15,23 +15,22 @@ PicEditWindow::PicEditWindow(const QString& fileName, QWidget *parent) :QWidget(
     // new a ImgDisp -- blank or fill with image
     curImgDisp = new ImgDisp(fileName);
 
-
     // file name
     curFile = new QString;
     fulCurFile = new QString;
 
     // new a scrollArea as the image disp frame
     curImgFrame = new QScrollArea;
-    curImgFrame->setAlignment(Qt::AlignLeft & Qt::AlignTop);
+    curImgFrame->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     curImgFrame->setWidgetResizable(false);
-    curImgFrame->viewport()->setAutoFillBackground(true);
-    curImgFrame->viewport()->setBackgroundRole(QPalette::Dark);
+    curImgFrame->setContentsMargins(0,0,0,0);
     curImgFrame->setWidget(curImgDisp);
 
     // set the layout
     hLayout = new QHBoxLayout;
     hLayout->addWidget(curImgFrame);
     setLayout(hLayout);
+    setContentsMargins(0,0,0,0);
 
     // signals and slots
     connect(curImgDisp,SIGNAL(curImgWasModified()),this,SLOT(setPicEditModified()));

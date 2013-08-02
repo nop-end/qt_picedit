@@ -62,6 +62,7 @@ void MainWindow::newEdit(){
 
     // add the new picEdit widget to the mdiArea
     QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
+    subWindow->setContentsMargins(0,0,0,0);
     subWindow->show();
 }
 
@@ -77,6 +78,7 @@ void MainWindow::openPic(){
         // one picture(x pictures), then new x-1 picEdit widgets to load the rest and add then all
         PicEditWindow* newImgEdit = new PicEditWindow(fileName);
         QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
+        subWindow->setContentsMargins(0,0,0,0);
         subWindow->show();
     }
 }
@@ -286,14 +288,10 @@ void MainWindow::createLayOut(){
     setCentralWidget(mdiArea);
     connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
     // set the subwindow in a tab view mode
-    mdiArea->setViewMode(QMdiArea::TabbedView);
+    /*mdiArea->setViewMode(QMdiArea::TabbedView);
     mdiArea->setTabShape(QTabWidget::Triangular);
     mdiArea->setTabsMovable(true);
-    mdiArea->setTabsClosable(true);
-
-    // set background color
-    QPalette pa;
-    pa.setColor(QPalette::Background, QColor(0,0,0,255));
+    mdiArea->setTabsClosable(true);*/
 
     // set the window to be maximized when open up
     setWindowState(Qt::WindowMaximized);
