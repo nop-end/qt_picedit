@@ -11,29 +11,10 @@
 
 /*--------------------------------------- public funtions -----------------------------------------*/
 // constructor
-PicEditWindow::PicEditWindow(const QString& fileName, QWidget *parent) :QWidget(parent){
-    // new a ImgDisp -- blank or fill with image
-    curImgDisp = new ImgDisp(fileName);
-
+PicEditWindow::PicEditWindow(const QString& fileName, QScrollArea *parent) :QScrollArea(parent){
     // file name
     curFile = new QString;
     fulCurFile = new QString;
-
-    // new a scrollArea as the image disp frame
-    curImgFrame = new QScrollArea;
-    curImgFrame->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    curImgFrame->setWidgetResizable(false);
-    curImgFrame->setContentsMargins(0,0,0,0);
-    curImgFrame->setWidget(curImgDisp);
-
-    // set the layout
-    hLayout = new QHBoxLayout;
-    hLayout->addWidget(curImgFrame);
-    setLayout(hLayout);
-    setContentsMargins(0,0,0,0);
-
-    // signals and slots
-    connect(curImgDisp,SIGNAL(curImgWasModified()),this,SLOT(setPicEditModified()));
 
     // set title and icon
     settitle(fileName);
@@ -118,7 +99,7 @@ bool PicEditWindow::saveFile(const QString &fileName){
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // method 1: save file directly
-    curImgDisp->curImgFile()->save(fileName,"png",100);
+    emit saveImgFile(fileName);
     settitle(fileName);
 
     // method 2: write into byte array, not fully realized yet -- filename

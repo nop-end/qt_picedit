@@ -1,21 +1,22 @@
 #ifndef PICEDITWINDOW_H
 #define PICEDITWINDOW_H
 
-#include "imgDisp.h"
 #include <QWidget>
 #include <QString>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QScrollArea>
-#include <QPushButton>
+#include <QCloseEvent>
 
-
-class PicEditWindow : public QWidget
+class PicEditWindow : public QScrollArea
 {
     Q_OBJECT
 
+signals:
+    void saveImgFile(const QString& fileName);
+
 public:
-    explicit PicEditWindow(const QString& fileName = 0, QWidget* parent = 0);
+    explicit PicEditWindow(const QString& fileName = 0, QScrollArea* parent = 0);
 
     void settitle(const QString& fileName = 0);
     bool save();
@@ -34,11 +35,7 @@ private slots:
 private:
     bool saveFile(const QString& fileName);
 
-    QPushButton* ok;
-    QPushButton* no;
     QScrollArea* curImgFrame;
-    QHBoxLayout* hLayout;
-    ImgDisp* curImgDisp;
     QString* curFile;
     QString* fulCurFile;
     bool isUntitled;
