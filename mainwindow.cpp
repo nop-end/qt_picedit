@@ -58,11 +58,15 @@ void MainWindow::updateActions(){
 
 void MainWindow::newEdit(){
     // new a picEdit widget, which is outlined by a QScrollArea
-    PicEditWindow* newImgEdit = new PicEditWindow;
+    PicEdit* newImgEdit = new PicEdit;
+    QScrollArea* newImgContainer = new QScrollArea;
 
     // add the new picEdit widget to the mdiArea
-    QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
+    newImgContainer->setWidget(newImgEdit);
+    newImgContainer->setWidgetResizable(false);
+    QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgContainer);
     subWindow->setContentsMargins(0,0,0,0);
+
     subWindow->show();
 }
 
@@ -76,8 +80,13 @@ void MainWindow::openPic(){
     if(!fileName.isEmpty()){
         // to fill the current selected picEdit widget with selected images, and once select more than
         // one picture(x pictures), then new x-1 picEdit widgets to load the rest and add then all
-        PicEditWindow* newImgEdit = new PicEditWindow(fileName);
-        QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgEdit);
+        PicEdit* newImgEdit = new PicEdit(fileName);
+        QScrollArea* newImgContainer = new QScrollArea;
+
+        // add the new picEdit widget to the mdiArea
+        newImgContainer->setWidget(newImgEdit);
+        newImgContainer->setWidgetResizable(false);
+        QMdiSubWindow* subWindow = mdiArea->addSubWindow(newImgContainer);
         subWindow->setContentsMargins(0,0,0,0);
         subWindow->show();
     }
@@ -288,10 +297,10 @@ void MainWindow::createLayOut(){
     setCentralWidget(mdiArea);
     connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
     // set the subwindow in a tab view mode
-    /*mdiArea->setViewMode(QMdiArea::TabbedView);
-    mdiArea->setTabShape(QTabWidget::Triangular);
-    mdiArea->setTabsMovable(true);
-    mdiArea->setTabsClosable(true);*/
+//    mdiArea->setViewMode(QMdiArea::TabbedView);
+//    mdiArea->setTabShape(QTabWidget::Triangular);
+//    mdiArea->setTabsMovable(true);
+//    mdiArea->setTabsClosable(true);
 
     // set the window to be maximized when open up
     setWindowState(Qt::WindowMaximized);
@@ -303,10 +312,10 @@ void MainWindow::updateRecentFileActions(){
 }
 
 
-PicEditWindow* MainWindow::activePicEdit(){
+PicEdit* MainWindow::activePicEdit(){
     QMdiSubWindow* subWindow = mdiArea->activeSubWindow();
     if(subWindow){
-        return qobject_cast<PicEditWindow*>(subWindow->widget());
+        return qobject_cast<PicEdit*>(subWindow->widget());
     }else{
         return 0;
     }

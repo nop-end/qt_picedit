@@ -10,7 +10,7 @@
 #include <QMdiArea>
 #include <QLabel>
 
-#include "piceditwindow.h"
+#include "picEdit.h"
 
 
 class MainWindow : public QMainWindow
@@ -46,7 +46,7 @@ private:
     void createLayOut();
     void createStatusBar();
     void updateRecentFileActions();
-    PicEditWindow* activePicEdit();
+    PicEdit* activePicEdit();
     bool nonSavedSubwindowExisit();
     bool okToClose();
 

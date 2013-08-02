@@ -1,15 +1,13 @@
 QT += widgets gui core
 
 HEADERS += \
-    imgDisp.h \
     mainwindow.h \
-    piceditwindow.h
+    picEdit.h
 
 SOURCES += \
-    imgDisp.cpp \
     main.cpp \
     mainwindow.cpp \
-    piceditwindow.cpp
+    picEdit.cpp
 
 RESOURCES += \
     icon.qrc \
