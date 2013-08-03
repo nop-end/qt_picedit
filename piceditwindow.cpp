@@ -101,8 +101,11 @@ void PicEditWindow::resizeEvent(QResizeEvent *event){
 
 // set the zoomIn and zoomOut
 void PicEditWindow::wheelEvent(QWheelEvent *event){
-    int wheelStep = event->delta() / 120;
-    emit reZoomPicEdit(wheelStep);
+    // only press control and wheel together can lead to zoom
+    if(QApplication::keyboardModifiers() == Qt::ControlModifier){
+        int wheelStep = event->delta() / 120;
+        emit reZoomPicEdit(wheelStep);
+    }
 }
 
 
