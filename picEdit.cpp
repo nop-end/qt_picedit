@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QSizePolicy>
+#include <QtMath>
 
 
 /*--------------------------------------- public funtions -----------------------------------------*/
@@ -17,6 +18,7 @@ PicEdit::PicEdit(const QString& fileName, QWidget *parent) :QWidget(parent)
     // initial color and zoom factor
     curColor = Qt::black;
     curZoom = 4;
+    curZoomFactor = 2;
 
     // blank fill or image fill
     if(fileName != 0){
@@ -57,12 +59,14 @@ void PicEdit::setCurImgFile(const QImage& newImg){
 }
 
 // set new zoom factor
-void PicEdit::setZoomFactor(int newZoom){
+void PicEdit::setZoom(const float newZoom){
     // avoid "0" in the divider
-    if(newZoom < 1)
-        newZoom = 1;
     if(newZoom != curZoom){
         curZoom = newZoom;
+        if(curZoom <= 1.0){
+            int tempH = curImg->height()*curZoom;
+            curImg->scaledToHeight(tempH);
+        }
         update();
         updateGeometry();
     }
@@ -131,8 +135,17 @@ void PicEdit::reSizeSelf(const QSize &size){
 
 }
 
-void PicEdit::reZoomSelf(int newZoom){
-    setZoomFactor(newZoom + curZoom);
+void PicEdit::reZoomSelf(int wheelFactor){
+    int tempZoom;
+    int tempZoomFactor;
+    int tempSize;
+    tempZoomFactor = curZoomFactor - wheelFactor;
+    tempZoom = qPow(2,tempZoomFactor);
+    tempSize = curImg->height() * tempZoom;
+    if((tempSize >= 1) && (tempZoomFactor <= 10)){
+        curZoomFactor = tempZoomFactor;
+        setZoom(tempZoom);
+    }
 }
 
 
@@ -158,7 +171,11 @@ void PicEdit::setImgPix(const QPoint &pos, bool opaque){
 
 // returns the zoomed rect of one pixel
 QRect PicEdit::pixRect(int i, int j) const{
-    return QRect(curZoom * i, curZoom * j , curZoom, curZoom);
+    if(curZoom > 1.0){
+        return QRect(curZoom * i, curZoom * j , curZoom, curZoom);
+    }else{
+        return QRect(curZoom*i,curZoom*j,1,1);
+    }
 }
 
 

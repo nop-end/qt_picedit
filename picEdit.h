@@ -16,7 +16,7 @@ class PicEdit : public QWidget
     // declare three attributes of picDisp widget and the corresponding read & write functions
     Q_PROPERTY(QColor penColor READ penColor WRITE setPenColor)
     Q_PROPERTY(QImage curImgFile READ curImgFile WRITE setCurImgFile)
-    Q_PROPERTY(int zoomFactor READ zoomFactor WRITE setZoomFactor)
+    Q_PROPERTY(int zoomFactor READ zoomFactor WRITE setZoom)
 
 signals:
     void curImgWasModified();
@@ -30,7 +30,7 @@ public:
     QImage* curImgFile() const {return curImg;}
     void setCurImgFile(const QImage& newImg);
     int zoomFactor() const {return curZoom;}
-    void setZoomFactor(const int newZoom);
+    void setZoom(const float newZoom);
 
     // redef of event functions
 protected:
@@ -42,7 +42,7 @@ protected:
 private slots:
     bool saveFile(const QString& fileName);
     void reSizeSelf(const QSize& size);
-    void reZoomSelf(int newZoom);
+    void reZoomSelf(int wheelFactor);
 
 
 private:
@@ -54,7 +54,8 @@ private:
     QColor curColor;
     QImage* srcImg;
     QImage* curImg;
-    int curZoom;
+    float curZoom;
+    int curZoomFactor;
     
 };
 
