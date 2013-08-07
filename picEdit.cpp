@@ -24,11 +24,12 @@ PicEdit::PicEdit(const QString& fileName, QWidget *parent) :QWidget(parent)
     if(fileName != 0){
         srcImg = new QImage(fileName);
     }else{
-        srcImg = new QImage(40,30,QImage::Format_ARGB32);
+        srcImg = new QImage(120,90,QImage::Format_ARGB32);
         srcImg->fill(qRgba(0,0,0,0));
     }
     curImg = new QImage(*srcImg);
 
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -63,10 +64,6 @@ void PicEdit::setZoom(const float newZoom){
     // avoid "0" in the divider
     if(newZoom != curZoom){
         curZoom = newZoom;
-        if(curZoom <= 1.0){
-            int tempH = curImg->height()*curZoom;
-            curImg->scaledToHeight(tempH);
-        }
         update();
         updateGeometry();
     }
@@ -136,14 +133,20 @@ void PicEdit::reSizeSelf(const QSize &size){
 }
 
 void PicEdit::reZoomSelf(int wheelFactor){
-    int tempZoom;
+    float tempZoom;
     int tempZoomFactor;
     int tempSize;
     tempZoomFactor = curZoomFactor - wheelFactor;
     tempZoom = qPow(2,tempZoomFactor);
     tempSize = curImg->height() * tempZoom;
+
     if((tempSize >= 1) && (tempZoomFactor <= 10)){
         curZoomFactor = tempZoomFactor;
+
+        if(tempZoom <= 1.0){
+            curImg->scaledToHeight(tempSize);
+        }
+
         setZoom(tempZoom);
     }
 }

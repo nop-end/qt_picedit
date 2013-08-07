@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <QMdiSubWindow>
 #include <QScrollArea>
+#include <QDockWidget>
+#include <QSettings>
 
 #include "mainwindow.h"
 #include "picEdit.h"
@@ -19,7 +21,8 @@ MainWindow::MainWindow(){
     createContextMenu();
     createToolBars();
     createStatusBar();
-    createLayOut();
+    createSubWindowLayOut();
+    createDockWindowLayOut();
 
     // remove the "set the initial plain picEdit widget and display on the mdiArea"
     // initial without a new untitled file
@@ -31,6 +34,8 @@ MainWindow::MainWindow(){
 
     // wipe out the heap storage on delete of the mainwindow
     setAttribute(Qt::WA_DeleteOnClose);
+
+    readSettings();
 }
 
 
@@ -45,6 +50,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
         if(!mdiArea->subWindowList().isEmpty()){
             event->ignore();
         }else{
+            writeSettings();
             event->accept();
         }
     }
@@ -194,6 +200,8 @@ void MainWindow::createActions(){
     zoomOutAction->setShortcut(QKeySequence::ZoomOut);
     zoomOutAction->setStatusTip(tr("Zoom out the picture"));
 
+
+
     aboutAction = new QAction(tr("&About"), this);
     aboutAction->setStatusTip(tr("Show the application's About box"));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -230,6 +238,8 @@ void MainWindow::createMenus(){
 
     optionsMenu = menuBar()->addMenu(tr("&Options"));
 
+    viewMenu = menuBar()->addMenu(tr("&View"));
+
     menuBar()->addSeparator();
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
@@ -244,12 +254,14 @@ void MainWindow::createContextMenu(){
 
 void MainWindow::createToolBars(){
     fileToolBar = addToolBar(tr("&File"));
+    fileToolBar->setObjectName("fileToolBar");
     fileToolBar->addAction(newDrawAction);
     fileToolBar->addAction(openPicAction);
     fileToolBar->addAction(saveAction);
     fileToolBar->addAction(saveAsAction);
 
     editToolBar = addToolBar(tr("&Edit"));
+    editToolBar->setObjectName("editToolBar");
     editToolBar->addAction(cutAction);
     editToolBar->addAction(copyAction);
     editToolBar->addAction(pasteAction);
@@ -273,19 +285,27 @@ void MainWindow::createStatusBar(){
     updateStatusBar();
 }
 
-void MainWindow::createLayOut(){
+void MainWindow::createSubWindowLayOut(){
     // set the mdiarea of mainwindow, if set tab view, use setdocumentmode & settabview
     mdiArea = new QMdiArea;
     setCentralWidget(mdiArea);
     connect(mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateActions()));
     // set the subwindow in a tab view mode
-//    mdiArea->setViewMode(QMdiArea::TabbedView);
-//    mdiArea->setTabShape(QTabWidget::Triangular);
-//    mdiArea->setTabsMovable(true);
-//    mdiArea->setTabsClosable(true);
+    mdiArea->setViewMode(QMdiArea::TabbedView);
+    mdiArea->setTabShape(QTabWidget::Triangular);
+    mdiArea->setTabsMovable(true);
+    mdiArea->setTabsClosable(true);
 
     // set the window to be maximized when open up
     setWindowState(Qt::WindowMaximized);
+}
+
+void MainWindow::createDockWindowLayOut(){
+    handleDockWidget = new QDockWidget;
+    handleDockWidget->setObjectName("handleDockWidget");
+    handleDockWidget->setWindowTitle("handle Dock Widget");
+    handleDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt:: RightDockWidgetArea | Qt::TopDockWidgetArea);
+    addDockWidget(Qt::LeftDockWidgetArea,handleDockWidget);
 }
 
 
@@ -353,3 +373,28 @@ void MainWindow::addNewPicEdit(const QString& fileName){
     // show subWindow
     subWindow->show();
 }
+
+void MainWindow::readSettings(){
+    QSettings settings("Software hupanHUSTMVL.", "picEdit");
+    settings.beginGroup("mainWindow");
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("state").toByteArray());
+    settings.endGroup();
+}
+
+void MainWindow::writeSettings(){
+    QSettings settings("Software hupanHUSTMVL.", "picEdit");
+    settings.beginGroup("mainWindow");
+    settings.setValue("geometry",saveGeometry());
+    settings.setValue("state",saveState());
+    settings.endGroup();
+}
+
+
+
+
+
+
+
+
+

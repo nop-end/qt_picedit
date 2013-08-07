@@ -42,19 +42,23 @@ private:
     void createMenus();
     void createContextMenu();
     void createToolBars();
-    void createLayOut();
+    void createSubWindowLayOut();
+    void createDockWindowLayOut();
     void createStatusBar();
     void updateRecentFileActions();
     PicEditWindow* activePicEdit();
     bool nonSavedSubwindowExisit();
     bool okToClose();
     void addNewPicEdit(const QString& fileName = 0);
+    void readSettings();
+    void writeSettings();
 
 
     /*--------------- Private Members ---------------*/
 private:
     // widgets
-    QMdiArea *mdiArea;
+    QMdiArea* mdiArea;
+    QDockWidget* handleDockWidget;
 
     // recent file
     QString curFile;
@@ -67,6 +71,7 @@ private:
     QMenu* editMenu;
     QMenu* toolsMenu;
     QMenu* optionsMenu;
+    QMenu* viewMenu;
     QMenu* helpMenu;
 
     // toolbar
